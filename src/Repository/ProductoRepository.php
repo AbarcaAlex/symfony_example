@@ -3,7 +3,9 @@
 namespace App\Repository;
 
 use App\Entity\Producto;
+use App\Utils\Functions;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -24,17 +26,17 @@ class ProductoRepository extends ServiceEntityRepository
 //    /**
 //     * @return Producto[] Returns an array of Producto objects
 //     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('p')
-//            ->andWhere('p.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('p.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
+    public function findAllWithPagination(int $currentPage, int $limit): Paginator
+    {
+        //creamos query
+        $query = $this->createQueryBuilder('p')
+        ->getQuery();
+
+        //creamos paginator con la funcion paginate
+        $paginator = Functions::paginate($query, $currentPage, $limit);
+
+        return $paginator;
+    }
 
 //    public function findOneBySomeField($value): ?Producto
 //    {
