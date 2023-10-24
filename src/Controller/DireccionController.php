@@ -10,7 +10,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[Route('/direccion', name: 'direcciones')]
-class UsuarioController extends AbstractController
+class DireccionController extends AbstractController
 {
   #[Route('', name: 'app_direccion_create', methods: ['POST'])]
   public function create(EntityManagerInterface $entityManager, Request $request): JsonResponse

@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Usuario;
+use App\Service\GeneradorDeMensajes;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -13,7 +14,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class UsuarioController extends AbstractController
 {
   #[Route('', name: 'app_usuario_create', methods: ['POST'])]
-  public function create(EntityManagerInterface $entityManager, Request $request): JsonResponse
+  public function create(EntityManagerInterface $entityManager, Request $request, GeneradorDeMensajes $generadorDeMensajes): JsonResponse
   {
     $usuario = new Usuario();
     $usuario->setNombre($request->request->get('nombre'));
@@ -25,14 +26,24 @@ class UsuarioController extends AbstractController
     $entityManager->flush();
 
     return $this->json([
-        'message' => 'Se guardo el nuevo usuario con id ' . $usuario->getId()
+        'message' => $generadorDeMensajes->getMensaje(0) . '. Se guardo el nuevo usuario con id ' . $usuario->getId()
     ]); 
   }
 
   #[Route('', name: 'app_usuario_read_all', methods: ['GET'])]
-  public function readAll(EntityManagerInterface $entityManager): JsonResponse
+  public function readAll(EntityManagerInterface $entityManager, Request $request): JsonResponse
   {
-    $usuarios = $entityManager->getRepository(Usuario::class)->findAll();
+    $repositorio = $entityManager->getRepository(Usuario::class);
+
+    $limit = $request->get('limit',5);
+
+    $page = $request->get('page',1);
+
+    $usuarios = $repositorio->findAllWithPagination($page,$limit);
+
+    $total = $usuarios->count();
+
+    $lastPage = (int) ceil($total/$limit);
 
     $data = [];
   
@@ -44,7 +55,7 @@ class UsuarioController extends AbstractController
         ];
     }
     
-    return $this->json($data); 
+    return $this->json(['data'=> $data, 'total'=> $total, 'lastPage'=> $lastPage]); 
   }
 
   #[Route('/{id}', name: 'app_usuario_read_one', methods: ['GET'])]
@@ -117,5 +128,22 @@ class UsuarioController extends AbstractController
     $entityManager->flush();
 
     return $this->json(['message'=>'Se elimino el usuario.', 'data' => $data]);
+  }
+
+  #[Route('/mayores_a_35',name:'app_usuario_read_all_older_than_35',methods:['GET'])]
+  public function readAllMayores35(EntityManagerInterface $entityManager, Request $request): JsonResponse
+  {
+    $usuarios = $entityManager->getRepository(Usuario::class)->findUsuariosMayoresDe35();
+
+    $data = [];
+
+    foreach($usuarios as $usuario){
+      $data[]=[
+        'id'=> $usuario->getId(),
+        'nombre'=> $usuario->getNombre(),
+        'edad'=> $usuario->getEdad(),
+      ];
+    }
+    return $this->json(['data'=> $data]);
   }
 }

@@ -3,7 +3,9 @@
 namespace App\Repository;
 
 use App\Entity\Usuario;
+use App\Utils\Functions;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -24,17 +26,26 @@ class UsuarioRepository extends ServiceEntityRepository
 //    /**
 //     * @return Usuario[] Returns an array of Usuario objects
 //     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('u')
-//            ->andWhere('u.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('u.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
+    public function findUsuariosMayoresDe35(): array
+    {
+        return $this->createQueryBuilder('u')
+            ->andWhere('u.edad > 35')
+            ->getQuery()
+            ->getResult()
+        ;
+    }
+
+    public function findAllWithPagination(int $currentPage, int $limit): Paginator
+    {
+        //creamos query
+        $query = $this->createQueryBuilder('p')
+        ->getQuery();
+
+        //creamos paginator con la funcion paginate
+        $paginator = Functions::paginate($query, $currentPage, $limit);
+
+        return $paginator;
+    }
 
 //    public function findOneBySomeField($value): ?Usuario
 //    {
