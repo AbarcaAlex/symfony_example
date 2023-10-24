@@ -19,6 +19,7 @@ class DireccionController extends AbstractController
     $direccion->setDepartamento($request->request->get('departamento'));
     $direccion->setMunicipio($request->request->get('municipio'));
     $direccion->setDireccion($request->request->get('direccion'));
+    
     // Se avisa a Doctrine que queremos guardar un nuevo registro pero no se ejecutan las consultas
     $entityManager->persist($direccion);
     
@@ -31,9 +32,19 @@ class DireccionController extends AbstractController
   }
 
   #[Route('', name: 'app_direccion_read_all', methods: ['GET'])]
-  public function readAll(EntityManagerInterface $entityManager): JsonResponse
+  public function readAll(EntityManagerInterface $entityManager, Request $request): JsonResponse
   {
-    $direcciones = $entityManager->getRepository(Direccion::class)->findAll();
+    $repositorio = $entityManager->getRepository(Direccion::class);
+
+    $limit = $request->get('limit',5);
+
+    $page = $request->get('page',1);
+
+    $direcciones = $repositorio->findAllWithPagination($page,$limit);
+
+    $total = $direcciones->count();
+
+    $lastPage = (int) ceil($total/$limit);
 
     $data = [];
   
@@ -46,7 +57,7 @@ class DireccionController extends AbstractController
         ];
     }
     
-    return $this->json($data); 
+    return $this->json(['data'=> $data, 'total'=> $total, 'lastPage'=> $lastPage]);
   }
 
   #[Route('/{id}', name: 'app_direccion_read_one', methods: ['GET'])]
