@@ -1,6 +1,6 @@
 gesdinet_jwt_refresh_token:
     refresh_token_class: App\Entity\RefreshToken
-    ttl: 3600 #por defecto es 2592000 (1 mes)
+    ttl: 2592000 #por defecto es 2592000 (1 mes)
     ttl_update: true
     return_expiration: true
 
