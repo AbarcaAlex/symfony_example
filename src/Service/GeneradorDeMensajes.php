@@ -8,6 +8,7 @@ class GeneradorDeMensajes {
         'Esta es la informacion del usuario:',
         'Estos son los nuevos datos del usuario:',
         'Se elimino el usuario:',
+        'Estos son los usuarios mayores de 35 años',
         'Estos son los usuarios cuyo nombre empieza con la letra A:'
     ];
 

@@ -23,18 +23,26 @@ class UsuarioRepository extends ServiceEntityRepository
         parent::__construct($registry, Usuario::class);
     }
 
-//    /**
-//     * @return Usuario[] Returns an array of Usuario objects
-//     */
-    /*public function findUsuariosQueEmpiezanConA(): array
+    public function findUsuariosMayoresDe35(): array
     {
         return $this->createQueryBuilder('u')
-            ->andWhere('u.nombre like A%')
+            ->andWhere('u.edad > 35')
             ->getQuery()
             ->getResult()
         ;
     }
-    */
+
+    public function findUsuariosQueEmpiezanConA(): array
+    {
+        
+        return $this->createQueryBuilder('u')
+            ->andWhere('u.nombre like :letra')
+            ->setParameter('letra','%A')
+            ->getQuery()
+            ->getResult()
+        ;
+    }
+    
 
     public function findAllWithPagination(int $currentPage, int $limit): Paginator
     {

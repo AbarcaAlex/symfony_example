@@ -14,6 +14,42 @@ use Symfony\Component\Routing\Annotation\Route;
 #[Route('/usuario', name: 'usuarios')]
 class UsuarioController extends AbstractController
 {
+  #[Route('/mayores_a_35', name: 'app_usuario_read_all_older_than_35', methods: ['GET'])]
+  public function readAllMayores35(EntityManagerInterface $entityManager, Request $request, GeneradorDeMensajes $generadorDeMensajes): JsonResponse
+  {
+    $usuarios = $entityManager->getRepository(Usuario::class)->findUsuariosMayoresDe35();
+
+    $data = [];
+  
+    foreach ($usuarios as $usuario) {
+        $data[] = [
+            'id' => $usuario->getId(),
+            'nombre' => $usuario->getNombre(),
+            'edad' => $usuario->getEdad(),
+        ];
+      }
+    
+      return $this->json(['message' => $generadorDeMensajes->getMensaje(5), 'data'=>$data] ); 
+    }
+
+  #[Route('/empiezan_con_a',name:'app_usuario_read_all_who_start_with_a',methods:['GET'])]
+  public function readAllWhoStartWithA(EntityManagerInterface $entityManager, Request $request, GeneradorDeMensajes $generadorDeMensajes): JsonResponse
+  {
+    $usuarios = $entityManager->getRepository(Usuario::class)->findUsuariosQueEmpiezanConA();
+
+    $data = [];
+
+    foreach($usuarios as $usuario){
+      $data[]=[
+        'id'=> $usuario->getId(),
+        'nombre'=> $usuario->getNombre(),
+        'edad'=> $usuario->getEdad(),
+      ];
+    }
+    return $this->json(['message' => $generadorDeMensajes->getMensaje(6), 'data'=>$data]);
+  }
+  
+
   #[Route('', name: 'app_usuario_create', methods: ['POST'])]
   public function create(EntityManagerInterface $entityManager, Request $request, GeneradorDeMensajes $generadorDeMensajes): JsonResponse
   {
@@ -149,6 +185,8 @@ class UsuarioController extends AbstractController
     return $this->json(['message' => $generadorDeMensajes->getMensaje(4), 'data'=>$data]);
   }
 
+  
+
   /*#[Route('/empiezan_con_a',name:'app_usuario_read_all_who_start_with_a',methods:['GET'])]
   public function readAllWhoStartWithA(EntityManagerInterface $entityManager, Request $request, GeneradorDeMensajes $generadorDeMensajes): JsonResponse
   {
@@ -163,7 +201,7 @@ class UsuarioController extends AbstractController
         'edad'=> $usuario->getEdad(),
       ];
     }
-    return $this->json(['message' => $generadorDeMensajes->getMensaje(5), 'data'=>$data]);
+    return $this->json(['message' => $generadorDeMensajes->getMensaje(6), 'data'=>$data]);
   }
   */
 }
