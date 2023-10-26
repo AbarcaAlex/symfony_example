@@ -25,18 +25,26 @@ class UsuarioController extends AbstractController
 
     // Se ejecutan las consultas SQL para guardar el nuevo registro
     $entityManager->flush();
-
+        
+      $data[] = [
+        'id' => $usuario->getId(),
+        'nombre' => $usuario->getNombre(),
+        'edad' => $usuario->getEdad(),
+        'direccion' => $usuario->getDirecciones()
+      ];
+      
     return $this->json([
-        'message' => $generadorDeMensajes->getMensaje(0) . '. Se guardo el nuevo usuario con id ' . $usuario->getId()
+        'message' => $generadorDeMensajes->getMensaje(0),
+        'data'=>$data
     ]); 
   }
 
   #[Route('', name: 'app_usuario_read_all', methods: ['GET'])]
-  public function readAll(EntityManagerInterface $entityManager, Request $request): JsonResponse
+  public function readAll(EntityManagerInterface $entityManager, Request $request, GeneradorDeMensajes $generadorDeMensajes): JsonResponse
   {
     $repositorio = $entityManager->getRepository(Usuario::class);
 
-    $limit = $request->get('limit',5);
+    $limit = $request->get('limit',10);
 
     $page = $request->get('page',1);
 
@@ -60,11 +68,11 @@ class UsuarioController extends AbstractController
                
       }
       
-    return $this->json(['data'=> $data, 'total'=> $total, 'lastPage'=> $lastPage]); 
+    return $this->json(['message'=> $generadorDeMensajes->getMensaje(1),'data'=> $data, 'total'=> $total, 'lastPage'=> $lastPage]); 
   }
 
   #[Route('/{id}', name: 'app_usuario_read_one', methods: ['GET'])]
-  public function readOne(EntityManagerInterface $entityManager, int $id): JsonResponse
+  public function readOne(EntityManagerInterface $entityManager, int $id, GeneradorDeMensajes $generadorDeMensajes): JsonResponse
   {
     $usuario = $entityManager->getRepository(Usuario::class)->find($id);
 
@@ -72,16 +80,21 @@ class UsuarioController extends AbstractController
       return $this->json(['error'=>'No se encontro el usuario.'], 404);
     }
 
-    return $this->json([
-      'id' => $usuario->getId(), 
-      'nombre' => $usuario->getNombre(), 
+    $data[] = [
+      'id' => $usuario->getId(),
+      'nombre' => $usuario->getNombre(),
       'edad' => $usuario->getEdad(),
       'direccion' => $usuario->getDirecciones()
+    ];
+
+    return $this->json([
+      'message' => $generadorDeMensajes->getMensaje(2),
+      'data'=>$data
     ]);  
   }
 
   #[Route('/{id}', name: 'app_usuario_edit', methods: ['PUT'])]
-  public function update(EntityManagerInterface $entityManager, int $id, Request $request): JsonResponse
+  public function update(EntityManagerInterface $entityManager, int $id, Request $request, GeneradorDeMensajes $generadorDeMensajes): JsonResponse
   {
 
     // Busca el usuario por id
@@ -110,11 +123,11 @@ class UsuarioController extends AbstractController
     // Se aplican los cambios de la entidad en la bd
     $entityManager->flush();
 
-    return $this->json(['message'=>'Se actualizaron los datos del usuario.', 'data' => $data]);
+    return $this->json(['message' => $generadorDeMensajes->getMensaje(3), 'data'=>$data]);
   }
 
   #[Route('/{id}', name: 'app_usuario_delete', methods: ['DELETE'])]
-  public function delete(EntityManagerInterface $entityManager, int $id, Request $request): JsonResponse
+  public function delete(EntityManagerInterface $entityManager, int $id, Request $request, GeneradorDeMensajes $generadorDeMensajes): JsonResponse
   {
 
     // Busca el usuario por id
@@ -133,11 +146,11 @@ class UsuarioController extends AbstractController
     // Se aplican los cambios de la entidad en la bd
     $entityManager->flush();
 
-    return $this->json(['message'=>'Se elimino el usuario.', 'data' => $data]);
+    return $this->json(['message' => $generadorDeMensajes->getMensaje(4), 'data'=>$data]);
   }
 
   /*#[Route('/empiezan_con_a',name:'app_usuario_read_all_who_start_with_a',methods:['GET'])]
-  public function readAllWhoStartWithA(EntityManagerInterface $entityManager, Request $request): JsonResponse
+  public function readAllWhoStartWithA(EntityManagerInterface $entityManager, Request $request, GeneradorDeMensajes $generadorDeMensajes): JsonResponse
   {
     $usuarios = $entityManager->getRepository(Usuario::class)->findUsuariosQueEmpiezanConA();
 
@@ -150,7 +163,7 @@ class UsuarioController extends AbstractController
         'edad'=> $usuario->getEdad(),
       ];
     }
-    return $this->json(['data'=> $data]);
+    return $this->json(['message' => $generadorDeMensajes->getMensaje(5), 'data'=>$data]);
   }
   */
 }
