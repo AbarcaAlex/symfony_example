@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Usuario;
 use App\Service\GeneradorDeMensajes;
 use Doctrine\ORM\EntityManagerInterface;
+use PhpParser\Node\Expr\BinaryOp\Equal;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -46,15 +47,19 @@ class UsuarioController extends AbstractController
     $lastPage = (int) ceil($total/$limit);
 
     $data = [];
-  
-    foreach ($usuarios as $usuario) {
-        $data[] = [
-            'id' => $usuario->getId(),
-            'nombre' => $usuario->getNombre(),
-            'edad' => $usuario->getEdad(),
-        ];
-    }
     
+      foreach ($usuarios as $usuario) {
+        
+        $data[] = [
+          'id' => $usuario->getId(),
+          'nombre' => $usuario->getNombre(),
+          'edad' => $usuario->getEdad(),
+          'direccion' => $usuario->getDirecciones()
+        ];
+        
+               
+      }
+      
     return $this->json(['data'=> $data, 'total'=> $total, 'lastPage'=> $lastPage]); 
   }
 
@@ -70,7 +75,8 @@ class UsuarioController extends AbstractController
     return $this->json([
       'id' => $usuario->getId(), 
       'nombre' => $usuario->getNombre(), 
-      'edad' => $usuario->getEdad()
+      'edad' => $usuario->getEdad(),
+      'direccion' => $usuario->getDirecciones()
     ]);  
   }
 
@@ -130,10 +136,10 @@ class UsuarioController extends AbstractController
     return $this->json(['message'=>'Se elimino el usuario.', 'data' => $data]);
   }
 
-  #[Route('/mayores_a_35',name:'app_usuario_read_all_older_than_35',methods:['GET'])]
-  public function readAllMayores35(EntityManagerInterface $entityManager, Request $request): JsonResponse
+  /*#[Route('/empiezan_con_a',name:'app_usuario_read_all_who_start_with_a',methods:['GET'])]
+  public function readAllWhoStartWithA(EntityManagerInterface $entityManager, Request $request): JsonResponse
   {
-    $usuarios = $entityManager->getRepository(Usuario::class)->findUsuariosMayoresDe35();
+    $usuarios = $entityManager->getRepository(Usuario::class)->findUsuariosQueEmpiezanConA();
 
     $data = [];
 
@@ -146,4 +152,5 @@ class UsuarioController extends AbstractController
     }
     return $this->json(['data'=> $data]);
   }
+  */
 }

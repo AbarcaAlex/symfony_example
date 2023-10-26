@@ -26,14 +26,15 @@ class UsuarioRepository extends ServiceEntityRepository
 //    /**
 //     * @return Usuario[] Returns an array of Usuario objects
 //     */
-    public function findUsuariosMayoresDe35(): array
+    /*public function findUsuariosQueEmpiezanConA(): array
     {
         return $this->createQueryBuilder('u')
-            ->andWhere('u.edad > 35')
+            ->andWhere('u.nombre like A%')
             ->getQuery()
             ->getResult()
         ;
     }
+    */
 
     public function findAllWithPagination(int $currentPage, int $limit): Paginator
     {
@@ -47,13 +48,5 @@ class UsuarioRepository extends ServiceEntityRepository
         return $paginator;
     }
 
-//    public function findOneBySomeField($value): ?Usuario
-//    {
-//        return $this->createQueryBuilder('u')
-//            ->andWhere('u.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+
 }
